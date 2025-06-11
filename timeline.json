@@ -1,0 +1,36 @@
+[
+  {
+    "id": "item-1",
+    "title": "Online Campaign Launch",
+    "date": "2023-01-15T12:00:00Z",
+    "tags": ["proven-lies"],
+    "previewText": "CHU launches \"A Helping Hand\" campaign, which goes viral. The centerpiece is an emotional video depicting an elderly woman receiving a free boiler repair.",
+    "previewImage": "https://placehold.co/150x84/3b82f6/ffffff?text=Video",
+    "fullDescription": "<p>Community Helpers United (CHU) launches its flagship \"A Helping Hand\" campaign. The campaign quickly gains traction online, largely due to a highly emotional video that appears to show an elderly woman, visibly moved to tears, after receiving a brand new boiler, supposedly for free.</p>",
+    "evidence": [
+      {
+        "title": "Exhibit A: Campaign Video",
+        "url": "https://placehold.co/800x450/3b82f6/ffffff?text=Video+Placeholder"
+      }
+    ]
+  },
+  {
+    "id": "item-2",
+    "title": "First Public Complaint & Harassment",
+    "date": "2023-10-05T12:00:00Z",
+    "tags": ["proven-lies", "harassment"],
+    "previewText": "A blogger posts an analysis suggesting an image used by CHU is a stock photo. In response, John Doe's social media accounts begin a targeted harassment campaign.",
+    "previewImage": "https://placehold.co/150x84/f59e0b/ffffff?text=Blog+Post",
+    "fullDescription": "<p>An independent blogger publishes a detailed analysis showing that a photograph used in a recent CHU fundraising appeal, allegedly of a family in need, is actually a widely available stock photo. The post gains some traction, questioning the authenticity of CHU's claims. Within hours, social media accounts linked to John Doe and his associates begin a coordinated campaign of online harassment against the blogger, including doxxing and threats.</p>",
+    "evidence": [
+      {
+        "title": "Exhibit B: Stock Photo Comparison",
+        "url": "https://placehold.co/600x400/f59e0b/ffffff?text=Stock+Photo+Comparison"
+      },
+      {
+        "title": "Exhibit C: Screenshots of Harassing Posts",
+        "url": "https://placehold.co/600x400/ef4444/ffffff?text=Harassment+Screenshot"
+      }
+    ]
+  }
+]
