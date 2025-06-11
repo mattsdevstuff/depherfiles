@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Depher Files - Dossier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css"/>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active {
+            border-bottom-color: #dc2626;
+            color: #111827;
+            font-weight: 600;
+        }
+        .timeline-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out, margin-top 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            opacity: 0;
+            margin-top: 0;
+        }
+        .timeline-item.open .timeline-content {
+            max-height: 2000px;
+            opacity: 1;
+            margin-top: 1rem;
+        }
+        .timeline-item.open .chevron-icon { transform: rotate(90deg); }
+        .timeline-item.open .timeline-preview { display: none; }
+        .chevron-icon { transition: transform 0.3s ease-in-out; }
+        #imageModal { transition: opacity 0.3s ease; }
+        
+        .filter-btn { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; transition: all 0.2s ease-in-out; border: 2px solid transparent; text-transform: capitalize;}
+        .filter-btn.filter-all { background-color: #e5e7eb; color: #374151; }
+        .filter-btn.filter-proven-lies { background-color: #dbeafe; color: #1e40af; }
+        .filter-btn.filter-harassment { background-color: #fee2e2; color: #991b1b; }
+        .filter-btn.filter-charity-fraud { background-color: #dcfce7; color: #166534; }
+        .filter-btn.filter-data-protection { background-color: #f3e8ff; color: #581c87; }
+        .filter-btn.filter-safeguarding { background-color: #ffedd5; color: #9a3412; }
+        .filter-btn:hover { filter: brightness(0.95); }
+        .filter-btn.active { color: white; }
+        .filter-btn.active.filter-all { background-color: #dc2626; border-color: #dc2626; }
+        .filter-btn.active.filter-proven-lies { background-color: #2563eb; border-color: #1d4ed8; }
+        .filter-btn.active.filter-harassment { background-color: #dc2626; border-color: #b91c1c; }
+        .filter-btn.active.filter-charity-fraud { background-color: #16a34a; border-color: #15803d; }
+        .filter-btn.active.filter-data-protection { background-color: #9333ea; border-color: #7e22ce; }
+        .filter-btn.active.filter-safeguarding { background-color: #ea580c; border-color: #c2410c; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="container mx-auto max-w-5xl p-4 md:p-8">
+        
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">THE DEPHER FILES</h1>
+            <p class="text-xl md:text-2xl text-red-600 font-semibold mt-1">Interactive Dossier</p>
+        </header>
+        
+        <nav class="mb-10">
+            <div class="border-b border-gray-300">
+                <ul id="dossier-nav" class="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500">
+                    <li class="mr-2"><a href="#" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg active" data-tab="timeline">Interactive Timeline</a></li>
+                    <li class="mr-2"><a href="#" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg" data-tab="bbc">BBC Documentary</a></li>
+                    <li class="mr-2"><a href="#" class="nav-link inline-block p-4 border-b-2 border-transparent rounded-t-lg" data-tab="submit">Submit Evidence</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="tab-container">
+            <!-- PUBLIC TIMELINE TAB -->
+            <div id="timeline" class="tab-content active">
+                <section class="bg-white p-6 rounded-xl shadow-lg mb-10">
+                    <h2 class="text-2xl font-bold mb-3 text-gray-800">Case Summary</h2>
+                    <p class="text-gray-600 leading-relaxed">This dossier presents a chronological deep-dive into the activities of John Doe and the organization 'Community Helpers United' (CHU). The timeline below is dynamically updated. Each event can be expanded to view the associated evidence.</p>
+                </section>
+                
+                <div class="bg-white p-4 rounded-xl shadow-lg mb-8">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div id="filter-container" class="flex flex-wrap items-center gap-2">
+                            <span class="font-semibold mr-2 text-gray-700 hidden sm:inline">Filter:</span>
+                            <button class="filter-btn filter-all active" data-filter="all">All</button>
+                            <button class="filter-btn filter-proven-lies" data-filter="proven-lies">proven lies</button>
+                            <button class="filter-btn filter-harassment" data-filter="harassment">harassment</button>
+                            <button class="filter-btn filter-charity-fraud" data-filter="charity-fraud">charity fraud</button>
+                            <button class="filter-btn filter-data-protection" data-filter="data-protection">data protection</button>
+                            <button class="filter-btn filter-safeguarding" data-filter="safeguarding">safeguarding</button>
+                        </div>
+                        <div class="flex items-center gap-2 sm:gap-4">
+                             <div class="relative">
+                                 <select id="sort-order" class="appearance-none w-full sm:w-auto bg-gray-100 border-gray-300 text-gray-700 py-2 pl-3 pr-8 rounded-lg focus:outline-none focus:bg-white focus:border-red-500 text-sm">
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"><svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg></div>
+                             </div>
+                             <input type="text" id="datepicker" class="w-full sm:w-auto bg-gray-100 border-gray-300 text-gray-700 py-2 px-3 rounded-lg focus:outline-none focus:bg-white focus:border-red-500 text-sm" placeholder="Filter by Date Range">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="timeline-container" class="relative border-l-2 border-gray-300">
+                     <div id="timeline-loading" class="text-center p-10"><p class="text-gray-600">Loading timeline...</p></div>
+                     <div id="timeline-no-items" class="hidden text-center p-10"><p class="text-gray-600">No timeline events found for the selected filters.</p></div>
+                </div>
+            </div>
+
+            <!-- OTHER TABS -->
+            <div id="bbc" class="tab-content"><!-- ... BBC Content ... --></div>
+            <div id="submit" class="tab-content"><!-- ... Submit Form ... --></div>
+        </div>
+
+        <footer class="mt-12 pt-6 border-t border-gray-300">
+            <p class="text-xs text-gray-500 text-center"><strong>Disclaimer:</strong> This is a fictional dossier. All names, events, and evidence are fabricated.</p>
+        </footer>
+    </div>
+    
+    <!-- MODALS -->
+    <div id="imageModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 opacity-0"><!-- ... --></div>
+
+    <script>
+        // --- App State ---
+        let masterTimelineItems = [];
+        let datePicker;
+
+        // --- UI Element References ---
+        const timelineContainer = document.getElementById('timeline-container');
+        const loadingDiv = document.getElementById('timeline-loading');
+        const noItemsDiv = document.getElementById('timeline-no-items');
+        
+        // --- Template Generation ---
+        const createPublicTimelineItemHTML = (item) => {
+            const itemDate = new Date(item.date);
+            const formattedDate = itemDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            const tagColors = {
+                "proven-lies": "bg-blue-100 text-blue-800", "harassment": "bg-red-100 text-red-800", "charity-fraud": "bg-green-100 text-green-800",
+                "data-protection": "bg-purple-100 text-purple-800", "safeguarding": "bg-orange-100 text-orange-800"
+            };
+            const getTagClass = (tag) => tagColors[tag.toLowerCase().replace(/ /g, '-')] || "bg-gray-100 text-gray-800";
+
+            const tagsHtml = item.tags.map(tag => {
+                const tagText = tag.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                return `<span class="inline-block ${getTagClass(tag)} text-xs font-semibold px-2.5 py-0.5 rounded-full">${tagText}</span>`;
+            }).join('');
+
+            const evidenceHtml = item.evidence.map(e => `
+                <div class="bg-gray-50 p-3 rounded-lg">
+                    <span class="font-semibold text-sm text-gray-700 block mb-2">${e.title}</span>
+                    <img src="${e.url}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/ffffff?text=Image+Not+Found';" alt="${e.title}" class="w-full h-auto object-cover rounded-lg border dossier-image cursor-pointer">
+                </div>
+            `).join('');
+
+            return `
+                <div class="timeline-item mb-8 ml-6" data-tags="${item.tags.join(' ')}" data-date="${item.date}">
+                    <span class="absolute flex items-center justify-center w-6 h-6 bg-gray-700 rounded-full -left-3 ring-8 ring-white"></span>
+                    <div class="timeline-card bg-white p-4 rounded-xl shadow-lg cursor-pointer hover:shadow-xl transition-shadow">
+                        <div class="timeline-header flex justify-between items-start">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">${item.title}</h3>
+                                <time class="block text-sm font-medium text-gray-500">${formattedDate}</time>
+                                <div class="mt-2 flex items-center flex-wrap gap-2">${tagsHtml}</div>
+                            </div>
+                            <div class="flex-shrink-0 ml-4 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition">
+                                <svg class="chevron-icon w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </div>
+                        </div>
+                        <div class="timeline-preview mt-3 pt-3 border-t border-gray-200">
+                            <div class="flex items-center gap-4">
+                                <img src="${item.previewImage}" onerror="this.onerror=null;this.src='https://placehold.co/150x84/cccccc/ffffff?text=Image';" alt="Preview" class="w-20 h-auto object-cover rounded-md border-2 border-white shadow-md flex-shrink-0">
+                                <p class="text-sm text-gray-600 leading-tight">${item.previewText}</p>
+                            </div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="border-t border-gray-200 pt-4">
+                                <h4 class="font-bold text-lg mb-3">Details & Evidence</h4>
+                                <div class="prose max-w-none text-gray-600 mb-4">${item.fullDescription}</div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">${evidenceHtml}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        // --- Core Rendering Logic ---
+        function renderPublicTimeline() {
+            const activeTagFilter = document.querySelector('#filter-container .filter-btn.active').dataset.filter;
+            const sortOrder = document.getElementById('sort-order').value;
+            const startDate = datePicker.getStartDate();
+            const endDate = datePicker.getEndDate();
+
+            const filteredItems = masterTimelineItems.filter(item => {
+                const tagMatch = activeTagFilter === 'all' || (item.tags && item.tags.includes(activeTagFilter));
+                if (!tagMatch) return false;
+
+                if (startDate) {
+                    const itemDate = new Date(item.date);
+                    const start = startDate.dateInstance;
+                    const end = endDate ? endDate.dateInstance : start;
+                    start.setHours(0,0,0,0);
+                    end.setHours(23,59,59,999);
+                    return itemDate >= start && itemDate <= end;
+                }
+                return true;
+            });
+            
+            filteredItems.sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+            });
+
+            loadingDiv.classList.add('hidden');
+            timelineContainer.innerHTML = '';
+            if (filteredItems.length === 0) {
+                noItemsDiv.classList.remove('hidden');
+            } else {
+                noItemsDiv.classList.add('hidden');
+                timelineContainer.innerHTML = filteredItems.map(createPublicTimelineItemHTML).join('');
+            }
+        }
+        
+        // --- Initialization ---
+        async function initialize() {
+            try {
+                const response = await fetch('./timeline.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                masterTimelineItems = await response.json();
+                renderPublicTimeline();
+            } catch (error) {
+                console.error("Failed to load timeline.json:", error);
+                loadingDiv.innerHTML = `<p class="text-red-500">Could not load timeline data. Make sure 'timeline.json' is in the same directory.</p>`;
+            }
+        }
+
+        // --- Event Listeners ---
+        document.getElementById('dossier-nav').addEventListener('click', (e) => {
+            e.preventDefault();
+            const link = e.target.closest('.nav-link');
+            if (!link) return;
+            document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+            link.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(link.dataset.tab).classList.add('active');
+        });
+
+        document.querySelector('#filter-container').addEventListener('click', (e) => {
+            if(e.target.classList.contains('filter-btn')) {
+                document.querySelector('#filter-container .filter-btn.active').classList.remove('active');
+                e.target.classList.add('active');
+                renderPublicTimeline();
+            }
+        });
+        document.getElementById('sort-order').addEventListener('change', renderPublicTimeline);
+        
+        timelineContainer.addEventListener('click', (e) => {
+            const card = e.target.closest('.timeline-card');
+            if (card && !e.target.closest('.dossier-image')) {
+                card.parentElement.classList.toggle('open');
+            }
+        });
+
+        // --- Initialize Pickers & App ---
+        datePicker = new Litepicker({ 
+            element: document.getElementById('datepicker'), 
+            singleMode: false, 
+            autoApply: true, 
+            setup: (picker) => { 
+                picker.on('selected', renderPublicTimeline);
+                picker.on('clear:selection', () => {
+                    picker.clearSelection();
+                    renderPublicTimeline();
+                });
+            } 
+        });
+        
+        initialize();
+    </script>
+</body>
+</html>
